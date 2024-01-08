@@ -1,7 +1,11 @@
 #include <sys/socket.h>
+#include <iostream>
+#include <string.h>
 #include <unistd.h>
 #include "util.h"
 #include <arpa/inet.h>
+
+#define BUFFER_SIZE 1024
 
 int main() {
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -16,8 +20,7 @@ int main() {
 	errif(connect(sockfd, (sockaddr*)&serv_addr, sizeof(serv_addr)) == -1, "socket connect error");
 
 	while (true) {
-
-		char buf[1024];
+		char buf[BUFFER_SIZE];
 		bzero(&buf, sizeof(buf));
 		scanf("%s", buf);
 		ssize_t write_bytes = write(sockfd, buf, sizeof(buf));
@@ -27,7 +30,9 @@ int main() {
 		}
 		bzero(&buf, sizeof(buf));
 		ssize_t read_bytes = read(sockfd, buf, sizeof(buf));
-		if (read_bytes == 0) {
+		if (read_bytes > 0) {
+			printf("message from server: %s\n", buf);
+		} else if (read_bytes == 0) {
 			printf("server socket disconnected!\n");
 			break;
 		} else if (read_bytes == -1) {
