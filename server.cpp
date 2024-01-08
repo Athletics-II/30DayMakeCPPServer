@@ -51,13 +51,17 @@ int main() {
 }
 
 void handleReadEvent(int sockfd) {
-	char buf[READ_BUFFER];
+	std::vector<char> buf;
+	buf.resize(BUFFER_SIZE);	
 	while (true) {
 		bzero(&buf, sizeof(buf));
 		ssize_t read_bytes = read(sockfd, buf, sizeof(buf));
 		if (read_bytes > 0) {
 			printf("message from client fd %d: %s\n", sockfd, buf);
 			write(sockfd, buf, sizeof(buf));
+			if (static_cast<size_t>(read_bytes) == buffer.size() {
+				buf.resize(buf.size() * 2);
+			}
 		} else if (read_bytes == -1 && errno == EINTR) { // this condition means serv sock lost connection
 			printf("continue reading");
 			continue;
