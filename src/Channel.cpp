@@ -31,6 +31,10 @@ uint32_t Channel::getRevents() {
 	return revents;
 }
 
+bool Channel::getInEpoll() {
+	return inEpoll;
+}
+
 bool Channel::setInEpoll() {
 	inEpoll = true;
 }
