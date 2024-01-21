@@ -1,10 +1,8 @@
 #include <functional>
 #include "Socket.h"
 #include "Server.h"
-#include "Channel.h"
+#include "Connection.h"
 #include "Acceptor.h"
-
-#define READ_BUFFER 1024
 
 Server::Server(EventLoop *_loop) : loop(_loop), acceptor(nullptr) {
 	acceptor = new Acceptor(loop);
@@ -18,14 +16,10 @@ Server::~Server()
 }
 
 void Server::newConnection(Socket *sock) {
-	InetAddress* clnt_addr = new InetAddress();
-	Socket *clnt_sock = new Socket(serv_sock->accept(clnt_addr));
-	printf("new client fd %d! IP %s Port %d\n", clnt_sock->getFd(), inet_ntoa(clnt_addr->addr.sin_addr), ntohs(clnt_addr->addr.sin_port));
-	clnt_sock->setnonblocking();
-	Channel *clntChannel = new Channel(loop, clnt_sock->getFd());
-	std::function<void()> cb = std::bind(&Server::handleReadEvent, this, clnt_sock->getFd());
-	clntChannel->setCallback(cb);
-	clntChannel->enableReading();
+	Connection *conn = new Connection(loop, sock);
+	std::function<void(Socket*)> cb = std::bind(&Server::deleteConnection, this, std::placeholder::_1);
+	conn->setDeleteConnectionCallback(cb);
+	connections[sock->getFd()] = conn;
 }
 
 void Server::deleteConnection(Socket *sock) {

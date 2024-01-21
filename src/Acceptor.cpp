@@ -2,9 +2,8 @@
 #include "InetAddress.h"
 #include "Socket.h"
 #include "Channel.h"
-#include "Server.h"
 
-Acceptor::Acceptor(EventLoop *_loop) : loop(_loop)
+Acceptor::Acceptor(EventLoop *_loop) : loop(_loop), sock(nullptr), acceptChannel(nullptr)
 {
 	sock = new Socket();
 	addr = new InetAddress("127.0.0.1", 8888);
@@ -26,7 +25,7 @@ Acceptor::~Acceptor()
 
 void Acceptor::acceptConnection()
 {
-	InetAddress *addr = new InetAddress();
+	InetAddress *clnt_addr = new InetAddress();
 	Socket *clnt_sock = new Socket(sock->accept(clnt_addr));
 	printf("new client fd %d! IP: %s Port: %d\n", clnt_sock->getFd(), inet_ntoa(clnt_addr->getAddr().sin_addr), ntohs(clnt_addr->getAddr().sin_port);
 	clnt_sock->setnonblocking();

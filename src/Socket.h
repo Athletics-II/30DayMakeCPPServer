@@ -7,7 +7,7 @@ private:
 	int fd;
 public:
 	Socket();
-	Socket(int);
+	Socket(int _fd);
 	~Socket();
 
 	void bind(InetAddress*);
@@ -15,5 +15,7 @@ public:
 	void setnonblocking();
 
 	int accept(InetAddress*);
+	void connect(InetAddress*);
+
 	int getfd();
 };
